@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Beginner Full-Body Muscle Plan — Interactive Wall Chart</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Clean Print Styles so the homepage still prints cleanly like the PDF wall chart */
+    @media print {
+      body {
+        background: #ffffff !important;
+        padding: 0 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .wall-sheet {
+        box-shadow: none !important;
+        border: none !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 8mm !important;
+      }
+    }
+
+    /* Subtle pulse for active muscle highlight in modal */
+    @keyframes targetGlow {
+      0%, 100% { opacity: 0.72; }
+      50% { opacity: 1; }
+    }
+    .muscle-highlight {
+      animation: targetGlow 1.8s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body class="bg-slate-200/80 text-slate-900 font-sans antialiased min-h-screen py-4 sm:py-8 px-2 sm:px-6 selection:bg-emerald-500/20 selection:text-emerald-900">
+
+  <!-- Main Printable / Interactive Wall-Chart Sheet -->
+  <main class="wall-sheet max-w-5xl mx-auto bg-white border border-slate-300 rounded-2xl shadow-xl overflow-hidden">
+    
+    <!-- Top Masthead (Matches Printable PDF Wall Chart) -->
+    <header class="px-5 sm:px-8 pt-6 pb-5 border-b-[3px] border-slate-900 bg-white">
+      <div class="flex flex-col md:flex-row md:items-baseline justify-between gap-2">
+        <div>
+          <div class="flex items-center gap-2.5 flex-wrap">
+            <h1 class="text-xl sm:text-3xl font-black tracking-tight text-slate-900 uppercase">
+              Dumbbell + Bench Muscle Plan (5–40 lb Rack)
+            </h1>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-extrabold uppercase tracking-wider bg-emerald-50 text-emerald-800 border border-emerald-200">
+              Mon / Wed / Fri · Alternating A / B
+            </span>
+          </div>
+          <p class="mt-2 text-xs sm:text-sm text-slate-700 leading-relaxed">
+            <strong class="text-slate-900">Weekly Rhythm:</strong>
+            <span class="font-mono font-bold text-slate-900 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">Mon / Wed / Fri</span>
+            · Alternate <strong class="text-emerald-800">A / B / A</strong>, then <strong class="text-emerald-800">B / A / B</strong> · <span class="font-semibold">1+ Rest Day Between · 5 lb Rack Steps</span>
+          </p>
+        </div>
+
+        <!-- Subtle Utility Controls (Reset Sets / Print Chart) -->
+        <div class="no-print flex items-center gap-2 self-start md:self-center shrink-0 mt-2 md:mt-0">
+          <button onclick="resetAllChecks()" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition flex items-center gap-1.5" title="Clear all set checkboxes">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            <span>Reset Sets</span>
+          </button>
+          <button onclick="window.print()" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-700 hover:text-slate-950 bg-white hover:bg-slate-50 border border-slate-300 transition flex items-center gap-1.5" title="Print Wall Chart">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+            </svg>
+            <span>Print Chart</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Subtle Interactive Hint Strip -->
+      <div class="no-print mt-3 pt-2.5 border-t border-slate-200 flex items-center justify-between text-xs text-slate-500">
+        <span class="flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+          <span>Click any exercise row to open its <strong>live movement animation, tempo guide &amp; rest timer</strong>.</span>
+        </span>
+        <span id="header-progress-pill" class="font-mono font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+          0 / 18 Sets Checked
+        </span>
+      </div>
+    </header>
+
+    <!-- Routines Container (Stacked Workout A & Workout B) -->
+    <div class="px-5 sm:px-8 py-6 space-y-8">
+      
+      <!-- WORKOUT A SECTION -->
+      <section>
+        <div class="flex flex-wrap items-baseline justify-between gap-2 pb-2 border-b-2 border-emerald-700">
+          <h2 class="text-lg sm:text-xl font-black tracking-tight text-slate-900 uppercase">
+            Workout A: Push &amp; Squat
+          </h2>
+          <span class="text-xs font-bold uppercase tracking-wider text-emerald-800">
+            Upper Chest • Quads &amp; Glutes • Shoulders
+          </span>
+        </div>
+
+        <div id="workout-A-list" class="mt-3 divide-y divide-slate-200 border border-slate-300 rounded-xl overflow-hidden">
+          <!-- Rendered by JS -->
+        </div>
+      </section>
+
+      <!-- WORKOUT B SECTION -->
+      <section>
+        <div class="flex flex-wrap items-baseline justify-between gap-2 pb-2 border-b-2 border-emerald-700">
+          <h2 class="text-lg sm:text-xl font-black tracking-tight text-slate-900 uppercase">
+            Workout B: Pull &amp; Hinge
+          </h2>
+          <span class="text-xs font-bold uppercase tracking-wider text-emerald-800">
+            Upper Back &amp; Lats • Hamstrings &amp; Glutes • Biceps
+          </span>
+        </div>
+
+        <div id="workout-B-list" class="mt-3 divide-y divide-slate-200 border border-slate-300 rounded-xl overflow-hidden">
+          <!-- Rendered by JS -->
+        </div>
+      </section>
+
+      <!-- Bottom Wall-Chart Rules Footer (Matches PDF Callout Box) -->
+      <footer class="border-l-4 border-emerald-700 bg-slate-50 border-y border-r border-slate-200 rounded-r-xl p-4 sm:p-5 space-y-2.5 text-xs sm:text-sm text-slate-700 leading-relaxed">
+        <p>
+          <strong class="text-slate-900 font-extrabold">5 lb Rack Progression Rule:</strong>
+          Start at the bottom of the rep range (<span class="font-mono font-bold text-slate-900">8</span> or <span class="font-mono font-bold text-slate-900">10 reps</span>) with <span class="font-semibold text-slate-900">1–3 reps left in the tank</span>. Climb reps weekly to the top of the range across all sets, then step up <span class="font-mono font-bold text-emerald-800">5 lbs</span> on the rack and drop back to <span class="font-mono font-bold text-slate-900">8 reps</span>.
+        </p>
+        <p>
+          <strong class="text-slate-900 font-extrabold">Beginner Sets &amp; Warm-Up:</strong>
+          <span class="font-semibold text-slate-900">Weeks 1–2</span> start with <span class="font-mono font-bold text-slate-900">2 working sets</span>; <span class="font-semibold text-slate-900">Weeks 3+</span> add the 3rd set (<span class="font-mono font-bold text-slate-900">8–12</span> sets/muscle/week). Do 1–2 light warm-up sets with <span class="font-mono font-bold text-slate-900">10–20 lb</span> pairs before your first lift.
+        </p>
+      </footer>
+
+    </div>
+  </main>
+
+  <!-- INTERACTIVE EXERCISE DETAIL MODAL -->
+  <div id="exercise-modal" class="no-print fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 overflow-y-auto" onclick="handleBackdropClick(event)">
+    <div class="bg-white border border-slate-300 rounded-2xl shadow-2xl max-w-4xl w-full overflow-hidden my-auto flex flex-col max-h-[94vh]" onclick="event.stopPropagation()">
+      
+      <!-- Modal Top Header -->
+      <div class="px-5 py-4 bg-slate-900 text-white flex items-center justify-between gap-3 shrink-0">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <span id="modal-workout-badge" class="px-2.5 py-0.5 rounded text-xs font-extrabold uppercase tracking-wider bg-emerald-500 text-slate-950 shrink-0">
+            Workout A
+          </span>
+          <h3 id="modal-title" class="text-base sm:text-xl font-black truncate">
+            1. Incline Dumbbell Press
+          </h3>
+        </div>
+        <button onclick="closeExerciseModal()" class="p-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition shrink-0" aria-label="Close detail modal">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Modal Body (Scrollable on small screens) -->
+      <div class="p-5 sm:p-6 overflow-y-auto space-y-6">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          
+          <!-- Left Column: Live Kinematic Animation Stage + Controls -->
+          <div class="lg:col-span-6 space-y-3">
+            <div class="bg-slate-50 border-2 border-slate-200 rounded-xl p-3 relative">
+              <!-- Top Overlay Badges: Target Muscle + Live Tempo Phase -->
+              <div class="flex items-center justify-between gap-2 mb-2">
+                <span id="modal-muscle-badge" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold bg-emerald-100 text-emerald-900 border border-emerald-300">
+                  <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+                  <span id="modal-muscle-text">Upper Chest &amp; Delts</span>
+                </span>
+                <span id="modal-phase-pill" class="px-2.5 py-1 rounded-md font-mono text-xs font-extrabold tracking-wide bg-slate-900 text-emerald-400">
+                  LOWERING (3s)
+                </span>
+              </div>
+
+              <!-- Dynamic SVG Canvas (Driven by requestAnimationFrame) -->
+              <div class="w-full h-56 sm:h-64 bg-white border border-slate-200 rounded-lg flex items-center justify-center overflow-hidden">
+                <svg id="modal-anim-svg" viewBox="0 0 280 190" class="w-full h-full">
+                  <!-- Rendered dynamically per frame -->
+                </svg>
+              </div>
+
+              <!-- Tempo Timeline Progress Bar -->
+              <div class="mt-2.5">
+                <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+                  <div id="modal-phase-bar" class="h-full bg-emerald-600 transition-none" style="width: 0%"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Animation Playback Controls -->
+            <div class="flex items-center justify-between gap-2 bg-slate-100 p-2 rounded-xl border border-slate-200">
+              <button id="modal-play-btn" onclick="toggleAnimPlay()" class="flex-1 py-2 px-3 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition">
+                <svg id="modal-play-icon" class="w-4 h-4 text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M5.75 3a.75.75 0 00-.75.75v12.5c0 .414.336.75.75.75h1.5a.75.75 0 00.75-.75V3.75A.75.75 0 007.25 3h-1.5zm7 0a.75.75 0 00-.75.75v12.5c0 .414.336.75.75.75h1.5a.75.75 0 00.75-.75V3.75a.75.75 0 00-.75-.75h-1.5z"/>
+                </svg>
+                <span id="modal-play-label">Pause Animation</span>
+              </button>
+
+              <button id="modal-slowmo-btn" onclick="toggleSlowMo()" class="py-2 px-3.5 rounded-lg bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 text-xs font-mono font-bold transition">
+                1.0x Speed
+              </button>
+            </div>
+
+            <!-- Static Muscles Worked Panel (Front & Back Silhouette + Legend) -->
+            <div class="p-3.5 rounded-xl bg-white border border-slate-200 space-y-2.5">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <h4 class="text-xs font-extrabold uppercase tracking-wider text-slate-900">Muscles Worked</h4>
+                <div class="flex items-center gap-3 text-[11px] font-semibold text-slate-600">
+                  <span class="inline-flex items-center gap-1">
+                    <span class="w-2.5 h-2.5 rounded-xs bg-[#059669] inline-block"></span> Primary
+                  </span>
+                  <span class="inline-flex items-center gap-1">
+                    <span class="w-2.5 h-2.5 rounded-xs bg-[#6ee7b7] border border-emerald-400 inline-block"></span> Secondary
+                  </span>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-12 gap-3 items-center bg-slate-50 border border-slate-200/80 rounded-lg p-2.5">
+                <div id="modal-muscle-map" class="col-span-5 flex items-center justify-center">
+                  <!-- Enlarged front & back static muscle silhouette rendered by JS -->
+                </div>
+                <div class="col-span-7 space-y-2">
+                  <div>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-800 block">Primary Target</span>
+                    <div id="modal-primary-tags" class="mt-1 flex flex-wrap gap-1"></div>
+                  </div>
+                  <div>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">Secondary / Stabilizers</span>
+                    <div id="modal-secondary-tags" class="mt-1 flex flex-wrap gap-1"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Specs, Rack Weight Selector, Cues, Sets & Rest Timer -->
+          <div class="lg:col-span-6 space-y-4">
+            
+            <!-- 4-Box Execution Spec Grid -->
+            <div class="grid grid-cols-2 gap-2.5">
+              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">Bench Setup</span>
+                <span id="modal-bench" class="text-sm font-extrabold text-slate-900 mt-0.5 block">30°–45° Incline</span>
+              </div>
+              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">Sets × Reps</span>
+                <span id="modal-sets-reps" class="font-mono text-sm font-extrabold text-slate-900 mt-0.5 block">2–3 × 8–12</span>
+              </div>
+              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">Tempo Timing</span>
+                <span id="modal-tempo" class="text-sm font-extrabold text-emerald-800 mt-0.5 block">3s down, 1s up</span>
+              </div>
+              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">Start Weight</span>
+                <span id="modal-start-wt" class="font-mono text-sm font-extrabold text-slate-900 mt-0.5 block">25–30 lb (pair)</span>
+              </div>
+            </div>
+
+            <!-- Interactive 5–40 lb Rack Weight Selector Pill -->
+            <div class="p-3 rounded-xl bg-emerald-50/70 border border-emerald-200">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-extrabold text-emerald-950">My Selected Rack Weight (5 lb steps):</span>
+                <span id="modal-selected-wt-label" class="font-mono text-xs font-extrabold text-emerald-800 bg-white px-2 py-0.5 rounded border border-emerald-300">25 lb</span>
+              </div>
+              <div id="modal-rack-pills" class="grid grid-cols-8 gap-1">
+                <!-- 5, 10, 15, 20, 25, 30, 35, 40 rendered by JS -->
+              </div>
+            </div>
+
+            <!-- Step-by-Step Form Cues -->
+            <div class="p-3.5 rounded-xl bg-white border border-slate-200 space-y-2">
+              <h4 class="text-xs font-extrabold uppercase tracking-wider text-slate-900">Form &amp; Execution Cues</h4>
+              <ul id="modal-cues-list" class="text-xs sm:text-sm text-slate-700 space-y-1.5 list-disc pl-4">
+                <!-- Populated by JS -->
+              </ul>
+            </div>
+
+            <!-- Synced Set Checkboxes + Integrated Rest Timer -->
+            <div class="p-3.5 rounded-xl bg-slate-900 text-white space-y-3">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-300">Log Sets (Synced to Chart)</span>
+                <div id="modal-set-toggles" class="flex items-center gap-1.5">
+                  <!-- Set 1, Set 2, Set 3 buttons -->
+                </div>
+              </div>
+
+              <!-- Compact Rest Timer -->
+              <div class="pt-2.5 border-t border-slate-800 flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Rest Timer</span>
+                  <div class="flex items-baseline gap-2">
+                    <span id="modal-timer-display" class="font-mono text-2xl font-black text-emerald-400">01:30</span>
+                    <span id="modal-timer-status" class="text-[11px] text-slate-400">Preset</span>
+                  </div>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <button id="modal-timer-start-btn" onclick="toggleModalTimer()" class="px-3.5 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs transition">
+                    Start
+                  </button>
+                  <button onclick="addModalTimer15()" class="px-2.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-mono font-bold text-xs transition">
+                    +15s
+                  </button>
+                  <button onclick="resetModalTimer()" class="px-2.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition">
+                    Reset
+                  </button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer: Previous / Next Exercise Navigation -->
+      <div class="px-5 py-3 bg-slate-100 border-t border-slate-200 flex items-center justify-between gap-2 shrink-0">
+        <button id="modal-prev-btn" onclick="navigateExercise(-1)" class="px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 border border-slate-300 text-xs font-bold text-slate-800 flex items-center gap-1.5 transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+          <span>Previous Exercise</span>
+        </button>
+
+        <span id="modal-nav-counter" class="font-mono text-xs font-bold text-slate-500">1 of 6</span>
+
+        <button id="modal-next-btn" onclick="navigateExercise(1)" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-xs font-bold text-white flex items-center gap-1.5 transition">
+          <span>Next Exercise</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // =========================================================
+    // 1. EXERCISE CATALOG (EXACT MATCH TO PRINTABLE WALL CHART)
+    // =========================================================
+    const EXERCISES = [
+      {
+        id: 'incline_press',
+        number: 1,
+        workout: 'A',
+        workoutLabel: 'Workout A · Push & Squat',
+        name: 'Incline Dumbbell Press',
+        muscles: 'Upper Chest & Delts',
+        primaryMuscles: ['Upper Chest'],
+        secondaryMuscles: ['Front Delts', 'Triceps'],
+        muscleMap: {
+          primary: ['upper_chest'],
+          secondary: ['front_delts', 'triceps']
+        },
+        bench: '30°–45° incline',
+        startWeight: '25–30 lb (pair)',
+        defaultRackWeight: 25,
+        setsReps: '2–3 × 8–12',
+        restSeconds: 90,
+        tempo: '3s down, 1s up',
+        cues: [
+          'Set adjustable bench backrest to a 30°–45° incline.',
+          'Press dumbbells smoothly over your upper chest without clanking them together.',
+          'Lower for a controlled 3 seconds until elbows dip slightly below the bench pad.'
+        ],
+        // Static thumbnail SVG matching the crisp printable PDF diagram
+        thumbSvg: `
+          <svg viewBox="0 0 90 60" class="w-20 h-14 bg-white border border-slate-300 rounded-md shrink-0">
+            <line x1="6" y1="54" x2="84" y2="54" stroke="#94a3b8" stroke-width="1.5"/>
+            <polyline points="18,54 21,42 34,45 58,26" fill="none" stroke="#475569" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="52" y1="54" x2="50" y2="33" stroke="#475569" stroke-width="2"/>
+            <polyline points="20,53 21,40 33,42 52,26" fill="none" stroke="#0f172a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="57" cy="21" r="3.5" fill="#0f172a"/>
+            <circle cx="46" cy="29" r="3.2" fill="#059669"/>
+            <polyline points="46,29 40,21 47,12" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="42" y1="12" x2="52" y2="12" stroke="#059669" stroke-width="3" stroke-linecap="round"/>
+            <text x="8" y="14" font-size="9" font-weight="800" fill="#047857">35°</text>
+          </svg>
+        `,
+        // Tempo cycle in seconds: 3s down, 0.5s bottom pause, 1s up, 0.5s top lock
+        phases: [
+          { name: 'LOWERING (3s)', duration: 3.0, from: 0, to: 1 },
+          { name: 'BOTTOM STRETCH', duration: 0.5, from: 1, to: 1 },
+          { name: 'PRESSING (1s)', duration: 1.0, from: 1, to: 0 },
+          { name: 'TOP LOCKOUT', duration: 0.5, from: 0, to: 0 }
+        ]
+      },
+      {
+        id: 'goblet_squat',
+        number: 2,
+        workout: 'A',
+        workoutLabel: 'Workout A · Push & Squat',
+        name: 'Goblet Squat',
+        muscles: 'Quads & Glutes',
+        primaryMuscles: ['Quads', 'Glutes'],
+        secondaryMuscles: ['Core'],
+        muscleMap: {
+          primary: ['quads', 'glutes'],
+          secondary: ['core']
+        },
+        bench: 'Flat (tap target)',
+        startWeight: '35–40 lb (single)',
+        defaultRackWeight: 35,
+        setsReps: '2–3 × 10–15',
+        restSeconds: 90,
+        tempo: '3s down, 1s up',
+        cues: [
+          'Cup the top plate of a single dumbbell tightly against your upper chest.',
+          'Sit hips back and down between your knees while keeping your chest tall.',
+          'Lightly tap the flat bench pad behind you, then drive through mid-foot to stand.'
+        ],
+        thumbSvg: `
+          <svg viewBox="0 0 90 60" class="w-20 h-14 bg-white border border-slate-300 rounded-md shrink-0">
+            <line x1="6" y1="54" x2="84" y2="54" stroke="#94a3b8" stroke-width="1.5"/>
+            <polyline points="18,54 18,40 36,40 36,54" fill="none" stroke="#475569" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <polyline points="54,53 56,39 38,38 43,19" fill="none" stroke="#0f172a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="44" cy="13" r="3.5" fill="#0f172a"/>
+            <line x1="42" y1="38" x2="52" y2="39" stroke="#059669" stroke-width="3.5" stroke-linecap="round"/>
+            <polyline points="43,21 51,26 54,22" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="55" y1="18" x2="55" y2="27" stroke="#059669" stroke-width="3.5" stroke-linecap="round"/>
+            <text x="14" y="34" font-size="9" font-weight="800" fill="#047857">TAP</text>
+          </svg>
+        `,
+        phases: [
+          { name: 'DESCENDING (3s)', duration: 3.0, from: 0, to: 1 },
+          { name: 'LIGHT BENCH TAP', duration: 0.5, from: 1, to: 1 },
+          { name: 'DRIVING UP (1s)', duration: 1.0, from: 1, to: 0 },
+          { name: 'STAND TALL', duration: 0.5, from: 0, to: 0 }
+        ]
+      },
+      {
+        id: 'seated_press',
+        number: 3,
+        workout: 'A',
+        workoutLabel: 'Workout A · Push & Squat',
+        name: 'Seated Shoulder Press',
+        muscles: 'Shoulders & Triceps',
+        primaryMuscles: ['Front & Side Delts'],
+        secondaryMuscles: ['Triceps'],
+        muscleMap: {
+          primary: ['front_delts', 'side_delts'],
+          secondary: ['triceps']
+        },
+        bench: '80°–85° upright',
+        startWeight: '20–25 lb (pair)',
+        defaultRackWeight: 20,
+        setsReps: '2–3 × 8–10',
+        restSeconds: 90,
+        tempo: '2s down, 1s up',
+        cues: [
+          'Set bench backrest nearly vertical (80°–85°) and brace your torso against the pad.',
+          'Keep your ribs pulled down (no lower-back arch) throughout every rep.',
+          'Angle elbows slightly forward (~30°) rather than flaring straight out to the sides.'
+        ],
+        thumbSvg: `
+          <svg viewBox="0 0 90 60" class="w-20 h-14 bg-white border border-slate-300 rounded-md shrink-0">
+            <line x1="6" y1="54" x2="84" y2="54" stroke="#94a3b8" stroke-width="1.5"/>
+            <polyline points="28,54 30,41 48,41 50,54" fill="none" stroke="#475569" stroke-width="2"/>
+            <line x1="30" y1="41" x2="33" y2="18" stroke="#475569" stroke-width="2.5" stroke-linecap="round"/>
+            <polyline points="58,53 56,39 36,39 38,21" fill="none" stroke="#0f172a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="39" cy="15" r="3.5" fill="#0f172a"/>
+            <circle cx="39" cy="22" r="3.2" fill="#059669"/>
+            <polyline points="39,22 46,16 44,7" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="39" y1="7" x2="49" y2="7" stroke="#059669" stroke-width="3" stroke-linecap="round"/>
+            <text x="8" y="25" font-size="9" font-weight="800" fill="#047857">85°</text>
+          </svg>
+        `,
+        phases: [
+          { name: 'LOWERING (2s)', duration: 2.0, from: 0, to: 1 },
+          { name: 'SHOULDER LEVEL', duration: 0.4, from: 1, to: 1 },
+          { name: 'PRESSING (1s)', duration: 1.0, from: 1, to: 0 },
+          { name: 'OVERHEAD LOCK', duration: 0.5, from: 0, to: 0 }
+        ]
+      },
+      {
+        id: 'chest_row',
+        number: 4,
+        workout: 'B',
+        workoutLabel: 'Workout B · Pull & Hinge',
+        name: 'Chest-Supported Row',
+        muscles: 'Upper Back & Lats',
+        primaryMuscles: ['Upper Back / Lats', 'Rhomboids'],
+        secondaryMuscles: ['Rear Delts', 'Biceps'],
+        muscleMap: {
+          primary: ['upper_back', 'lats'],
+          secondary: ['rear_delts', 'biceps']
+        },
+        bench: '30°–45° incline',
+        startWeight: '30–35 lb (pair)',
+        defaultRackWeight: 30,
+        setsReps: '2–3 × 10–12',
+        restSeconds: 90,
+        tempo: '2s down, 1s squeeze',
+        cues: [
+          'Lie chest-down on a 30°–45° incline bench with feet planted firmly on the floor.',
+          'Drive elbows back toward your hips rather than shrugging shoulders toward ears.',
+          'Squeeze shoulder blades together for 1 full second at the top, then lower for 2s.'
+        ],
+        thumbSvg: `
+          <svg viewBox="0 0 90 60" class="w-20 h-14 bg-white border border-slate-300 rounded-md shrink-0">
+            <line x1="6" y1="54" x2="84" y2="54" stroke="#94a3b8" stroke-width="1.5"/>
+            <polyline points="22,54 25,42 36,45 60,25" fill="none" stroke="#475569" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="55" y1="54" x2="53" y2="31" stroke="#475569" stroke-width="2"/>
+            <polyline points="18,53 24,41 35,41 55,24" fill="none" stroke="#0f172a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="60" cy="19" r="3.5" fill="#0f172a"/>
+            <line x1="42" y1="32" x2="51" y2="25" stroke="#059669" stroke-width="3.5" stroke-linecap="round"/>
+            <polyline points="51,27 45,35 49,42" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="44" y1="42" x2="54" y2="42" stroke="#059669" stroke-width="3" stroke-linecap="round"/>
+            <text x="8" y="14" font-size="9" font-weight="800" fill="#047857">ROW</text>
+          </svg>
+        `,
+        phases: [
+          { name: 'PULLING UP (1s)', duration: 1.0, from: 0, to: 1 },
+          { name: 'SQUEEZE BACK (1s)', duration: 1.0, from: 1, to: 1 },
+          { name: 'LOWERING (2s)', duration: 2.0, from: 1, to: 0 },
+          { name: 'DEAD HANG', duration: 0.4, from: 0, to: 0 }
+        ]
+      },
+      {
+        id: 'dumbbell_rdl',
+        number: 5,
+        workout: 'B',
+        workoutLabel: 'Workout B · Pull & Hinge',
+        name: 'Dumbbell Romanian Deadlift',
+        muscles: 'Hamstrings & Glutes',
+        primaryMuscles: ['Hamstrings', 'Glutes'],
+        secondaryMuscles: ['Lower Back'],
+        muscleMap: {
+          primary: ['hamstrings', 'glutes'],
+          secondary: ['lower_back']
+        },
+        bench: 'Standing (no bench)',
+        startWeight: '35–40 lb (pair)',
+        defaultRackWeight: 35,
+        setsReps: '2–3 × 8–12',
+        restSeconds: 90,
+        tempo: '3s down, 1s up',
+        cues: [
+          'Keep a soft, unlocked bend in your knees—do not turn it into a squat.',
+          'Push hips straight back for 3 seconds until you feel a deep hamstring stretch.',
+          'Keep dumbbells brushing close to your thighs and shins; snap hips forward to stand.'
+        ],
+        thumbSvg: `
+          <svg viewBox="0 0 90 60" class="w-20 h-14 bg-white border border-slate-300 rounded-md shrink-0">
+            <line x1="6" y1="54" x2="84" y2="54" stroke="#94a3b8" stroke-width="1.5"/>
+            <polyline points="42,53 43,43 37,32 57,26" fill="none" stroke="#0f172a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="62" cy="24" r="3.5" fill="#0f172a"/>
+            <line x1="38" y1="34" x2="41" y2="43" stroke="#059669" stroke-width="3.5" stroke-linecap="round"/>
+            <line x1="54" y1="27" x2="52" y2="43" stroke="#0f172a" stroke-width="2" stroke-linecap="round"/>
+            <line x1="47" y1="43" x2="57" y2="43" stroke="#059669" stroke-width="3" stroke-linecap="round"/>
+            <text x="8" y="34" font-size="9" font-weight="800" fill="#047857">HINGE</text>
+          </svg>
+        `,
+        phases: [
+          { name: 'HINGE BACK (3s)', duration: 3.0, from: 0, to: 1 },
+          { name: 'HAMSTRING STRETCH', duration: 0.5, from: 1, to: 1 },
+          { name: 'HIP DRIVE (1s)', duration: 1.0, from: 1, to: 0 },
+          { name: 'STAND TALL', duration: 0.5, from: 0, to: 0 }
+        ]
+      },
+      {
+        id: 'bicep_curl',
+        number: 6,
+        workout: 'B',
+        workoutLabel: 'Workout B · Pull & Hinge',
+        name: 'Alternating Bicep Curl',
+        muscles: 'Biceps & Forearms',
+        primaryMuscles: ['Biceps'],
+        secondaryMuscles: ['Forearms'],
+        muscleMap: {
+          primary: ['biceps'],
+          secondary: ['forearms']
+        },
+        bench: 'Standing or 60°',
+        startWeight: '25–30 lb (pair)',
+        defaultRackWeight: 25,
+        setsReps: '2–3 × 8–12/arm',
+        restSeconds: 60,
+        tempo: '2s down, 1s squeeze',
+        cues: [
+          'Pin upper arms tightly to your ribs and avoid swinging your torso.',
+          'Rotate your pinky upward as you curl to peak bicep contraction, squeezing 1s at top.',
+          'Lower for a controlled 2 seconds; optional: sit on a 60° incline bench for extra stretch.'
+        ],
+        thumbSvg: `
+          <svg viewBox="0 0 90 60" class="w-20 h-14 bg-white border border-slate-300 rounded-md shrink-0">
+            <line x1="6" y1="54" x2="84" y2="54" stroke="#94a3b8" stroke-width="1.5"/>
+            <line x1="44" y1="53" x2="44" y2="18" stroke="#0f172a" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="44" cy="12" r="3.5" fill="#0f172a"/>
+            <line x1="46" y1="21" x2="46" y2="30" stroke="#059669" stroke-width="3.5" stroke-linecap="round"/>
+            <polyline points="44,20 44,32 54,23" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="50" y1="23" x2="59" y2="23" stroke="#059669" stroke-width="3" stroke-linecap="round"/>
+            <text x="10" y="34" font-size="9" font-weight="800" fill="#047857">CURL</text>
+          </svg>
+        `,
+        phases: [
+          { name: 'CURLING UP (1s)', duration: 1.0, from: 0, to: 1 },
+          { name: 'SQUEEZE TOP (1s)', duration: 1.0, from: 1, to: 1 },
+          { name: 'LOWERING (2s)', duration: 2.0, from: 1, to: 0 },
+          { name: 'FULL EXTENSION', duration: 0.4, from: 0, to: 0 }
+        ]
+      }
+    ];
+
+    const RACK_WEIGHTS = [5, 10, 15, 20, 25, 30, 35, 40];
+    const STORAGE_KEY = 'wall_chart_state_v1';
+
+    // =========================================================
+    // 1B. SIMPLISTIC FRONT & BACK ANATOMICAL MUSCLE MAP SVG
+    // =========================================================
+    function buildMuscleMapSvg(muscleMap, size = 'thumb') {
+      const primary = new Set((muscleMap && muscleMap.primary) || []);
+      const secondary = new Set((muscleMap && muscleMap.secondary) || []);
+
+      const fillFor = (region) => {
+        if (primary.has(region)) return '#059669';   // Primary emerald green
+        if (secondary.has(region)) return '#6ee7b7'; // Secondary soft mint
+        return 'none';
+      };
+
+      const cls = size === 'modal'
+        ? 'w-32 h-24 bg-white border border-slate-300 rounded-lg p-1'
+        : 'w-16 h-11 bg-white border border-slate-300 rounded-md shrink-0';
+
+      return `
+        <svg viewBox="0 0 116 74" class="${cls}" role="img" aria-label="Front and back muscle diagram">
+          <!-- FRONT BODY SILHOUETTE (Left, x center = 29) -->
+          <g>
+            <!-- Base body silhouette -->
+            <circle cx="29" cy="10" r="4.5" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.2"/>
+            <path d="M21,17 L37,17 L39,34 L36,36 L36,64 L31,64 L29,43 L27,64 L22,64 L22,36 L19,34 Z" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.2" stroke-linejoin="round"/>
+            <path d="M21,17 L15,34 L18,35 L22,22" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.1" stroke-linejoin="round"/>
+            <path d="M37,17 L43,34 L40,35 L36,22" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.1" stroke-linejoin="round"/>
+
+            <!-- Front & Side Delts -->
+            <circle cx="20.5" cy="18.5" r="2.6" fill="${fillFor('front_delts') !== 'none' ? fillFor('front_delts') : fillFor('side_delts')}"/>
+            <circle cx="37.5" cy="18.5" r="2.6" fill="${fillFor('front_delts') !== 'none' ? fillFor('front_delts') : fillFor('side_delts')}"/>
+
+            <!-- Upper Chest -->
+            <path d="M23,18.5 Q29,21 35,18.5 L34.5,23.5 Q29,25 23.5,23.5 Z" fill="${fillFor('upper_chest')}"/>
+
+            <!-- Core / Abs -->
+            <rect x="25.5" y="25" width="7" height="11" rx="1.5" fill="${fillFor('core')}"/>
+
+            <!-- Biceps -->
+            <ellipse cx="18.2" cy="24.5" rx="1.6" ry="3.4" transform="rotate(14 18.2 24.5)" fill="${fillFor('biceps')}"/>
+            <ellipse cx="39.8" cy="24.5" rx="1.6" ry="3.4" transform="rotate(-14 39.8 24.5)" fill="${fillFor('biceps')}"/>
+
+            <!-- Forearms -->
+            <ellipse cx="16.6" cy="31" rx="1.3" ry="3.2" transform="rotate(14 16.6 31)" fill="${fillFor('forearms')}"/>
+            <ellipse cx="41.4" cy="31" rx="1.3" ry="3.2" transform="rotate(-14 41.4 31)" fill="${fillFor('forearms')}"/>
+
+            <!-- Quads -->
+            <rect x="22.8" y="38.5" width="4.8" height="12.5" rx="2" fill="${fillFor('quads')}"/>
+            <rect x="30.4" y="38.5" width="4.8" height="12.5" rx="2" fill="${fillFor('quads')}"/>
+
+            <text x="29" y="71.5" text-anchor="middle" font-size="5.5" font-weight="700" fill="#64748b" font-family="sans-serif">FRONT</text>
+          </g>
+
+          <!-- Divider -->
+          <line x1="58" y1="7" x2="58" y2="66" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="2 2"/>
+
+          <!-- BACK BODY SILHOUETTE (Right, x center = 87) -->
+          <g>
+            <!-- Base body silhouette -->
+            <circle cx="87" cy="10" r="4.5" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.2"/>
+            <path d="M79,17 L95,17 L97,34 L94,36 L94,64 L89,64 L87,43 L85,64 L80,64 L80,36 L77,34 Z" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.2" stroke-linejoin="round"/>
+            <path d="M79,17 L73,34 L76,35 L80,22" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.1" stroke-linejoin="round"/>
+            <path d="M95,17 L101,34 L98,35 L94,22" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.1" stroke-linejoin="round"/>
+
+            <!-- Rear Delts -->
+            <circle cx="78.5" cy="18.5" r="2.5" fill="${fillFor('rear_delts')}"/>
+            <circle cx="95.5" cy="18.5" r="2.5" fill="${fillFor('rear_delts')}"/>
+
+            <!-- Upper Back & Rhomboids -->
+            <polygon points="81.5,18 92.5,18 90.5,25.5 83.5,25.5" fill="${fillFor('upper_back')}"/>
+
+            <!-- Lats -->
+            <polygon points="80.5,21 83.5,25.5 83,31 80,28" fill="${fillFor('lats')}"/>
+            <polygon points="93.5,21 90.5,25.5 91,31 94,28" fill="${fillFor('lats')}"/>
+
+            <!-- Lower Back -->
+            <rect x="83.5" y="29" width="7" height="6.5" rx="1.5" fill="${fillFor('lower_back')}"/>
+
+            <!-- Triceps -->
+            <ellipse cx="76.2" cy="24.5" rx="1.6" ry="3.4" transform="rotate(14 76.2 24.5)" fill="${fillFor('triceps')}"/>
+            <ellipse cx="97.8" cy="24.5" rx="1.6" ry="3.4" transform="rotate(-14 97.8 24.5)" fill="${fillFor('triceps')}"/>
+
+            <!-- Glutes -->
+            <rect x="80.8" y="36" width="5.6" height="5.8" rx="2.4" fill="${fillFor('glutes')}"/>
+            <rect x="87.6" y="36" width="5.6" height="5.8" rx="2.4" fill="${fillFor('glutes')}"/>
+
+            <!-- Hamstrings -->
+            <rect x="81" y="42.5" width="4.6" height="10.5" rx="2" fill="${fillFor('hamstrings')}"/>
+            <rect x="88.4" y="42.5" width="4.6" height="10.5" rx="2" fill="${fillFor('hamstrings')}"/>
+
+            <text x="87" y="71.5" text-anchor="middle" font-size="5.5" font-weight="700" fill="#64748b" font-family="sans-serif">BACK</text>
+          </g>
+        </svg>
+      `;
+    }
+
+    // =========================================================
+    // 2. PERSISTENT STATE (LOCALSTORAGE)
+    // =========================================================
+    function loadState() {
+      const def = {
+        checks: {},
+        weights: {}
+      };
+      EXERCISES.forEach(ex => {
+        def.checks[ex.id] = [false, false, false];
+        def.weights[ex.id] = ex.defaultRackWeight;
+      });
+
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        if (!saved) return def;
+        return {
+          checks: { ...def.checks, ...(saved.checks || {}) },
+          weights: { ...def.weights, ...(saved.weights || {}) }
+        };
+      } catch (e) {
+        return def;
+      }
+    }
+
+    let state = loadState();
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {
+        // Ignore storage quota issues
+      }
+    }
+
+    // =========================================================
+    // 3. RENDER HOMEPAGE WALL CHART ROWS
+    // =========================================================
+    function renderWallChart() {
+      ['A', 'B'].forEach(workoutKey => {
+        const container = document.getElementById(`workout-${workoutKey}-list`);
+        const items = EXERCISES.filter(e => e.workout === workoutKey);
+
+        container.innerHTML = items.map(ex => {
+          const checks = state.checks[ex.id] || [false, false, false];
+          const allDone = checks.every(Boolean);
+          const selectedWt = state.weights[ex.id] || ex.defaultRackWeight;
+
+          const checkboxesHtml = checks.map((isChecked, idx) => `
+            <button
+              type="button"
+              onclick="event.stopPropagation(); toggleSetCheck('${ex.id}', ${idx})"
+              aria-label="Toggle Set ${idx + 1} for ${ex.name}"
+              class="w-7 h-7 rounded-md border font-mono text-xs font-extrabold transition flex items-center justify-center ${
+                isChecked
+                  ? 'bg-emerald-600 border-emerald-700 text-white shadow-xs'
+                  : 'bg-white border-slate-300 text-slate-500 hover:border-slate-500 hover:text-slate-900'
+              }"
+              title="Set ${idx + 1}"
+            >
+              ${isChecked ? '✓' : idx + 1}
+            </button>
+          `).join('');
+
+          return `
+            <div
+              onclick="openExerciseModal('${ex.id}')"
+              role="button"
+              tabindex="0"
+              onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openExerciseModal('${ex.id}');}"
+              class="group p-3.5 sm:p-4 transition cursor-pointer flex flex-col lg:flex-row lg:items-center justify-between gap-3.5 ${
+                allDone ? 'bg-emerald-50/50 hover:bg-emerald-50/80' : 'bg-white hover:bg-slate-50'
+              }"
+            >
+              <!-- Left: Form Thumbnail + Static Muscle Map + Exercise Title & Cues -->
+              <div class="flex items-start sm:items-center gap-3 flex-1 min-w-0">
+                ${ex.thumbSvg}
+
+                <!-- Simplistic Static Front/Back Muscle Map + Label -->
+                <div class="flex flex-col items-center shrink-0 w-20">
+                  ${buildMuscleMapSvg(ex.muscleMap, 'thumb')}
+                  <span class="mt-1 text-[9.5px] leading-tight font-extrabold text-emerald-800 text-center truncate w-full" title="${ex.muscles}">
+                    ${ex.muscles}
+                  </span>
+                </div>
+
+                <div class="min-w-0 flex-1">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <span class="font-extrabold text-sm sm:text-base text-slate-900 group-hover:text-emerald-800 transition">
+                      ${ex.number}. ${ex.name}
+                    </span>
+                    <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
+                      Bench: ${ex.bench}
+                    </span>
+                  </div>
+                  <p class="mt-1 text-xs text-slate-600 line-clamp-2">
+                    <span class="font-mono font-semibold text-slate-800">[${ex.tempo}]</span> · ${ex.cues[1]}
+                  </p>
+                </div>
+              </div>
+
+              <!-- Right: Specs + Quick Set Checkboxes + View Animation CTA -->
+              <div class="flex flex-wrap sm:flex-nowrap items-center justify-between lg:justify-end gap-3 sm:gap-4 pt-2 lg:pt-0 border-t lg:border-t-0 border-slate-100 shrink-0">
+                
+                <!-- Weight / Sets×Reps / Rest Compact Columns -->
+                <div class="flex items-center gap-3 sm:gap-4 text-xs">
+                  <div>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Start Wt</span>
+                    <span class="font-mono font-bold text-slate-900">${ex.startWeight}</span>
+                    <span class="font-mono text-[10px] text-emerald-700 font-bold block">My: ${selectedWt} lb</span>
+                  </div>
+                  <div>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Sets × Reps</span>
+                    <span class="font-mono font-extrabold text-slate-900">${ex.setsReps}</span>
+                  </div>
+                  <div>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Rest</span>
+                    <span class="font-mono font-bold text-slate-700">${ex.restSeconds}s</span>
+                  </div>
+                </div>
+
+                <!-- Quick Clickable Set Checkboxes -->
+                <div class="flex items-center gap-1" onclick="event.stopPropagation()">
+                  ${checkboxesHtml}
+                </div>
+
+                <!-- View Animation & Timing Button -->
+                <button
+                  type="button"
+                  onclick="event.stopPropagation(); openExerciseModal('${ex.id}')"
+                  class="no-print px-3 py-2 rounded-lg bg-slate-900 group-hover:bg-emerald-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-xs shrink-0"
+                >
+                  <svg class="w-3.5 h-3.5 text-emerald-400 group-hover:text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                  </svg>
+                  <span>Animation &amp; Timing</span>
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      });
+
+      updateHeaderProgress();
+    }
+
+    function toggleSetCheck(exId, setIdx) {
+      if (!state.checks[exId]) state.checks[exId] = [false, false, false];
+      state.checks[exId][setIdx] = !state.checks[exId][setIdx];
+      saveState();
+      renderWallChart();
+
+      // If modal is currently open for this exercise, sync its buttons too
+      if (activeExerciseId === exId) {
+        renderModalSetToggles();
+        // Auto-start modal rest timer when checking off a set
+        if (state.checks[exId][setIdx]) {
+          const ex = EXERCISES.find(e => e.id === exId);
+          startModalTimer(ex.restSeconds);
+        }
+      }
+    }
+
+    function resetAllChecks() {
+      EXERCISES.forEach(ex => {
+        state.checks[ex.id] = [false, false, false];
+      });
+      saveState();
+      renderWallChart();
+      if (activeExerciseId) renderModalSetToggles();
+    }
+
+    function updateHeaderProgress() {
+      let total = 0;
+      let done = 0;
+      EXERCISES.forEach(ex => {
+        const arr = state.checks[ex.id] || [false, false, false];
+        total += arr.length;
+        done += arr.filter(Boolean).length;
+      });
+      const pill = document.getElementById('header-progress-pill');
+      if (pill) pill.textContent = `${done} / ${total} Sets Checked`;
+    }
+
+    // =========================================================
+    // 4. MODAL STATE & CONTINUOUS KINEMATIC SVG ANIMATION
+    // =========================================================
+    let activeExerciseId = null;
+    let isAnimPlaying = true;
+    let animSpeed = 1.0; // 1.0 or 0.5
+    let animElapsed = 0;
+    let lastFrameTime = null;
+    let rafId = null;
+
+    function easeInOutSine(t) {
+      return -(Math.cos(Math.PI * t) - 1) / 2;
+    }
+
+    function openExerciseModal(exId) {
+      activeExerciseId = exId;
+      const ex = EXERCISES.find(e => e.id === exId);
+      if (!ex) return;
+
+      // Populate Modal Static Info
+      document.getElementById('modal-workout-badge').textContent = ex.workoutLabel;
+      document.getElementById('modal-title').textContent = `${ex.number}. ${ex.name}`;
+      document.getElementById('modal-muscle-text').textContent = ex.muscles;
+      document.getElementById('modal-bench').textContent = ex.bench;
+      document.getElementById('modal-sets-reps').textContent = ex.setsReps;
+      document.getElementById('modal-tempo').textContent = ex.tempo;
+      document.getElementById('modal-start-wt').textContent = ex.startWeight;
+      document.getElementById('modal-nav-counter').textContent = `${ex.number} of ${EXERCISES.length}`;
+
+      // Cues list
+      document.getElementById('modal-cues-list').innerHTML = ex.cues.map(c => `<li>${c}</li>`).join('');
+
+      // Static Muscles Worked Panel (Enlarged SVG + Primary/Secondary Tags)
+      document.getElementById('modal-muscle-map').innerHTML = buildMuscleMapSvg(ex.muscleMap, 'modal');
+      document.getElementById('modal-primary-tags').innerHTML = (ex.primaryMuscles || []).map(m =>
+        `<span class="px-2 py-0.5 rounded text-[11px] font-extrabold bg-emerald-600 text-white">${m}</span>`
+      ).join('');
+      document.getElementById('modal-secondary-tags').innerHTML = (ex.secondaryMuscles || []).map(m =>
+        `<span class="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-100 text-emerald-900 border border-emerald-300">${m}</span>`
+      ).join('');
+
+      // Rack Weight Pills & Set Toggles
+      renderModalRackPills();
+      renderModalSetToggles();
+
+      // Preset Rest Timer to this exercise's rest period
+      resetModalTimer(ex.restSeconds);
+
+      // Reset Animation Clock & Start Loop
+      animElapsed = 0;
+      lastFrameTime = null;
+      isAnimPlaying = true;
+      updatePlayButtonUI();
+
+      const modal = document.getElementById('exercise-modal');
+      modal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(animationLoop);
+    }
+
+    function closeExerciseModal() {
+      const modal = document.getElementById('exercise-modal');
+      modal.classList.add('hidden');
+      document.body.style.overflow = '';
+      activeExerciseId = null;
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
+      stopModalTimerInterval();
+    }
+
+    function handleBackdropClick(e) {
+      if (e.target.id === 'exercise-modal') {
+        closeExerciseModal();
+      }
+    }
+
+    function navigateExercise(delta) {
+      if (!activeExerciseId) return;
+      const idx = EXERCISES.findIndex(e => e.id === activeExerciseId);
+      const nextIdx = (idx + delta + EXERCISES.length) % EXERCISES.length;
+      openExerciseModal(EXERCISES[nextIdx].id);
+    }
+
+    // Keyboard Escape & Left/Right Arrow support inside Modal
+    document.addEventListener('keydown', (e) => {
+      if (!activeExerciseId) return;
+      if (e.key === 'Escape') closeExerciseModal();
+      if (e.key === 'ArrowRight') navigateExercise(1);
+      if (e.key === 'ArrowLeft') navigateExercise(-1);
+    });
+
+    function toggleAnimPlay() {
+      isAnimPlaying = !isAnimPlaying;
+      if (isAnimPlaying) lastFrameTime = performance.now();
+      updatePlayButtonUI();
+    }
+
+    function updatePlayButtonUI() {
+      const label = document.getElementById('modal-play-label');
+      const icon = document.getElementById('modal-play-icon');
+      if (isAnimPlaying) {
+        label.textContent = 'Pause Animation';
+        icon.innerHTML = `<path d="M5.75 3a.75.75 0 00-.75.75v12.5c0 .414.336.75.75.75h1.5a.75.75 0 00.75-.75V3.75A.75.75 0 007.25 3h-1.5zm7 0a.75.75 0 00-.75.75v12.5c0 .414.336.75.75.75h1.5a.75.75 0 00.75-.75V3.75a.75.75 0 00-.75-.75h-1.5z"/>`;
+      } else {
+        label.textContent = 'Resume Animation';
+        icon.innerHTML = `<path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/>`;
+      }
+    }
+
+    function toggleSlowMo() {
+      animSpeed = animSpeed === 1.0 ? 0.5 : 1.0;
+      const btn = document.getElementById('modal-slowmo-btn');
+      btn.textContent = animSpeed === 0.5 ? '0.5x Slow-Mo' : '1.0x Speed';
+      btn.className = animSpeed === 0.5
+        ? 'py-2 px-3.5 rounded-lg bg-emerald-600 text-white border border-emerald-700 text-xs font-mono font-bold transition'
+        : 'py-2 px-3.5 rounded-lg bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 text-xs font-mono font-bold transition';
+    }
+
+    function renderModalRackPills() {
+      const ex = EXERCISES.find(e => e.id === activeExerciseId);
+      if (!ex) return;
+      const currentWt = state.weights[ex.id] || ex.defaultRackWeight;
+      document.getElementById('modal-selected-wt-label').textContent = `${currentWt} lb`;
+
+      document.getElementById('modal-rack-pills').innerHTML = RACK_WEIGHTS.map(w => `
+        <button
+          type="button"
+          onclick="selectRackWeight('${ex.id}', ${w})"
+          class="py-1.5 rounded font-mono text-xs font-extrabold transition ${
+            w === currentWt
+              ? 'bg-emerald-600 text-white shadow-xs'
+              : 'bg-white text-slate-700 border border-emerald-200 hover:border-emerald-500'
+          }"
+        >
+          ${w}
+        </button>
+      `).join('');
+    }
+
+    function selectRackWeight(exId, wt) {
+      state.weights[exId] = wt;
+      saveState();
+      renderModalRackPills();
+      renderWallChart();
+    }
+
+    function renderModalSetToggles() {
+      const ex = EXERCISES.find(e => e.id === activeExerciseId);
+      if (!ex) return;
+      const checks = state.checks[ex.id] || [false, false, false];
+      document.getElementById('modal-set-toggles').innerHTML = checks.map((done, idx) => `
+        <button
+          type="button"
+          onclick="toggleSetCheck('${ex.id}', ${idx})"
+          class="px-2.5 py-1 rounded-md font-mono text-xs font-extrabold transition ${
+            done
+              ? 'bg-emerald-500 text-slate-950'
+              : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+          }"
+        >
+          ${done ? `✓ Set ${idx + 1}` : `Set ${idx + 1}`}
+        </button>
+      `).join('');
+    }
+
+    // Continuous Kinematic Animation Loop (requestAnimationFrame)
+    function animationLoop(timestamp) {
+      if (!activeExerciseId) return;
+      if (lastFrameTime === null) lastFrameTime = timestamp;
+
+      const dt = (timestamp - lastFrameTime) / 1000;
+      lastFrameTime = timestamp;
+
+      if (isAnimPlaying) {
+        animElapsed += dt * animSpeed;
+      }
+
+      const ex = EXERCISES.find(e => e.id === activeExerciseId);
+      if (ex) {
+        const totalDuration = ex.phases.reduce((sum, p) => sum + p.duration, 0);
+        const cycleTime = animElapsed % totalDuration;
+
+        let acc = 0;
+        let currentPhase = ex.phases[0];
+        let localProgress = 0;
+
+        for (const phase of ex.phases) {
+          if (cycleTime >= acc && cycleTime < acc + phase.duration) {
+            currentPhase = phase;
+            localProgress = (cycleTime - acc) / phase.duration;
+            break;
+          }
+          acc += phase.duration;
+        }
+
+        const eased = easeInOutSine(localProgress);
+        const p = currentPhase.from + (currentPhase.to - currentPhase.from) * eased;
+
+        // Update Phase Pill & Timeline Progress Bar
+        document.getElementById('modal-phase-pill').textContent = currentPhase.name;
+        document.getElementById('modal-phase-bar').style.width = `${(cycleTime / totalDuration) * 100}%`;
+
+        // Render Articulated SVG Frame (p = 0 is top/start position, p = 1 is bottom/peak position)
+        document.getElementById('modal-anim-svg').innerHTML = buildKinematicSvg(ex.id, p);
+      }
+
+      rafId = requestAnimationFrame(animationLoop);
+    }
+
+    // Articulated Stick-Figure + Bench Angle + Glowing Muscle SVG Generator
+    function buildKinematicSvg(exId, p) {
+      const floor = `<line x1="20" y1="168" x2="260" y2="168" stroke="#cbd5e1" stroke-width="2" stroke-linecap="round"/>`;
+
+      if (exId === 'incline_press') {
+        // p=0: dumbbell pressed overhead; p=1: elbows lowered slightly below 35° bench
+        const handX = 148 - p * 22;
+        const handY = 44 + p * 34;
+        const elbowX = 132 - p * 12;
+        const elbowY = 74 + p * 26;
+
+        return `
+          ${floor}
+          <!-- 35° Incline Bench -->
+          <line x1="65" y1="168" x2="75" y2="128" stroke="#64748b" stroke-width="4" stroke-linecap="round"/>
+          <line x1="162" y1="168" x2="156" y2="136" stroke="#64748b" stroke-width="4" stroke-linecap="round"/>
+          <line x1="60" y1="128" x2="104" y2="138" stroke="#475569" stroke-width="7" stroke-linecap="round"/>
+          <line x1="104" y1="138" x2="174" y2="82" stroke="#475569" stroke-width="7" stroke-linecap="round"/>
+          <!-- Angle Cue -->
+          <path d="M 126 138 A 22 22 0 0 0 121 124" fill="none" stroke="#059669" stroke-width="1.5" stroke-dasharray="2 2"/>
+          <text x="132" y="133" fill="#047857" font-size="10" font-family="monospace" font-weight="800">35°</text>
+
+          <!-- Lifter Body -->
+          <polyline points="62,166 66,126 100,128" fill="none" stroke="#334155" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="100" y1="128" x2="160" y2="80" stroke="#0f172a" stroke-width="7" stroke-linecap="round"/>
+          <circle cx="173" cy="69" r="10.5" fill="#0f172a"/>
+
+          <!-- Highlighted Target Muscle: Upper Chest & Front Delt -->
+          <ellipse cx="148" cy="87" rx="12" ry="7" transform="rotate(-38 148 87)" fill="#10b981" class="muscle-highlight"/>
+
+          <!-- Vertical Travel Guide -->
+          <line x1="148" y1="44" x2="126" y2="78" stroke="#10b981" stroke-width="1.5" stroke-dasharray="3 3"/>
+
+          <!-- Articulated Arm & Dumbbell -->
+          <polyline points="148,86 ${elbowX},${elbowY} ${handX},${handY}" fill="none" stroke="#0f172a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="${elbowX}" cy="${elbowY}" r="3" fill="#059669"/>
+          <!-- Dumbbell -->
+          <rect x="${handX - 13}" y="${handY - 4}" width="26" height="8" rx="2" fill="#059669"/>
+          <rect x="${handX - 16}" y="${handY - 8}" width="6" height="16" rx="2" fill="#0f172a"/>
+          <rect x="${handX + 10}" y="${handY - 8}" width="6" height="16" rx="2" fill="#0f172a"/>
+        `;
+      }
+
+      if (exId === 'goblet_squat') {
+        // p=0: standing tall; p=1: hips sit back and lightly tap flat bench behind
+        const hipX = 148 - p * 38;
+        const hipY = 92 + p * 30;
+        const kneeX = 152 + p * 12;
+        const kneeY = 130 + p * 2;
+        const shoulderX = hipX + 6 - p * 6;
+        const shoulderY = hipY - 46;
+        const dbX = shoulderX + 22;
+        const dbY = shoulderY + 12;
+
+        return `
+          ${floor}
+          <!-- Flat Bench Depth Target Behind Lifter -->
+          <line x1="68" y1="126" x2="122" y2="126" stroke="#475569" stroke-width="7" stroke-linecap="round"/>
+          <line x1="76" y1="126" x2="76" y2="168" stroke="#64748b" stroke-width="4" stroke-linecap="round"/>
+          <line x1="114" y1="126" x2="114" y2="168" stroke="#64748b" stroke-width="4" stroke-linecap="round"/>
+          <text x="66" y="116" fill="#047857" font-size="9.5" font-family="monospace" font-weight="800">BENCH TAP</text>
+
+          <!-- Shin & Thigh -->
+          <line x1="${kneeX}" y1="${kneeY}" x2="152" y2="166" stroke="#334155" stroke-width="6.5" stroke-linecap="round"/>
+          <line x1="${hipX}" y1="${hipY}" x2="${kneeX}" y2="${kneeY}" stroke="#0f172a" stroke-width="7" stroke-linecap="round"/>
+          
+          <!-- Highlighted Target Muscles: Quads & Glutes -->
+          <line x1="${hipX + 3}" y1="${hipY + 2}" x2="${kneeX - 3}" y2="${kneeY - 2}" stroke="#10b981" stroke-width="6" stroke-linecap="round" class="muscle-highlight"/>
+          <circle cx="${hipX - 2}" cy="${hipY}" r="7" fill="#10b981" class="muscle-highlight"/>
+
+          <!-- Torso & Head -->
+          <line x1="${hipX}" y1="${hipY}" x2="${shoulderX}" y2="${shoulderY}" stroke="#0f172a" stroke-width="7.5" stroke-linecap="round"/>
+          <circle cx="${shoulderX + 2}" cy="${shoulderY - 14}" r="10.5" fill="#0f172a"/>
+
+          <!-- Arms Cupping Goblet Dumbbell at Chest -->
+          <polyline points="${shoulderX},${shoulderY + 6} ${shoulderX + 16},${shoulderY + 18} ${dbX},${dbY}" fill="none" stroke="#0f172a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- Vertical Dumbbell -->
+          <rect x="${dbX - 4}" y="${dbY - 12}" width="8" height="24" rx="2" fill="#059669"/>
+          <rect x="${dbX - 8}" y="${dbY - 16}" width="16" height="6" rx="2" fill="#0f172a"/>
+          <rect x="${dbX - 8}" y="${dbY + 10}" width="16" height="6" rx="2" fill="#0f172a"/>
+        `;
+      }
+
+      if (exId === 'seated_press') {
+        // p=0: overhead lockout; p=1: dumbbells at shoulder height
+        const handX = 136 + p * 6;
+        const handY = 24 + p * 36;
+        const elbowX = 134 + p * 12;
+        const elbowY = 50 + p * 34;
+
+        return `
+          ${floor}
+          <!-- 85° Upright Bench -->
+          <line x1="92" y1="168" x2="96" y2="128" stroke="#64748b" stroke-width="4" stroke-linecap="round"/>
+          <line x1="152" y1="168" x2="148" y2="128" stroke="#64748b" stroke-width="4" stroke-linecap="round"/>
+          <line x1="90" y1="128" x2="150" y2="128" stroke="#475569" stroke-width="7" stroke-linecap="round"/>
+          <line x1="95" y1="128" x2="102" y2="54" stroke="#475569" stroke-width="7" stroke-linecap="round"/>
+          <text x="72" y="76" fill="#047857" font-size="10" font-family="monospace" font-weight="800">85°</text>
+
+          <!-- Seated Lifter -->
+          <polyline points="174,166 170,124 114,124" fill="none" stroke="#334155" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="114" y1="124" x2="120" y2="66" stroke="#0f172a" stroke-width="7" stroke-linecap="round"/>
+          <circle cx="122" cy="51" r="10.5" fill="#0f172a"/>
+
+          <!-- Highlighted Target Muscle: Deltoids -->
+          <circle cx="121" cy="68" r="8.5" fill="#10b981" class="muscle-highlight"/>
+
+          <!-- Travel Guide -->
+          <line x1="136" y1="24" x2="142" y2="60" stroke="#10b981" stroke-width="1.5" stroke-dasharray="3 3"/>
+
+          <!-- Articulated Arm & Dumbbell -->
+          <polyline points="121,68 ${elbowX},${elbowY} ${handX},${handY}" fill="none" stroke="#0f172a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="${elbowX}" cy="${elbowY}" r="3" fill="#059669"/>
+          <!-- Dumbbell -->
+          <rect x="${handX - 12}" y="${handY - 4}" width="24" height="8" rx="2" fill="#059669"/>
+          <rect x="${handX - 15}" y="${handY - 8}" width="5.5" height="16" rx="2" fill="#0f172a"/>
+          <rect x="${handX + 9.5}" y="${handY - 8}" width="5.5" height="16" rx="2" fill="#0f172a"/>
+        `;
+      }
+
+      if (exId === 'chest_row') {
+        // p=0: arms hanging straight down; p=1: elbows pulled back toward hips
+        const handX = 160 - p * 24;
+        const handY = 140 - p * 32;
+        const elbowX = 158 - p * 34;
+        const elbowY = 112 - p * 34;
+
+        return `
+          ${floor}
+          <!-- 35° Incline Bench -->
+          <line x1="74" y1="168" x2="84" y2="130" stroke="#64748b" stroke-width="4" stroke-linecap="round"/>
+          <line x1="170" y1="168" x2="164" y2="134" stroke="#64748b" stroke-width="4" stroke-linecap="round"/>
+          <line x1="70" y1="130" x2="112" y2="138" stroke="#475569" stroke-width="7" stroke-linecap="round"/>
+          <line x1="112" y1="138" x2="182" y2="80" stroke="#475569" stroke-width="7" stroke-linecap="round"/>
+          <text x="80" y="96" fill="#047857" font-size="10" font-family="monospace" font-weight="800">35° PAD</text>
+
+          <!-- Chest-Down Lifter -->
+          <polyline points="62,166 82,128 110,127" fill="none" stroke="#334155" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="110" y1="127" x2="168" y2="79" stroke="#0f172a" stroke-width="7" stroke-linecap="round"/>
+          <circle cx="180" cy="68" r="10.5" fill="#0f172a"/>
+
+          <!-- Highlighted Target Muscle: Upper Back & Lats -->
+          <ellipse cx="144" cy="92" rx="16" ry="7" transform="rotate(-40 144 92)" fill="#10b981" class="muscle-highlight"/>
+
+          <!-- Articulated Row Arm & Dumbbell -->
+          <polyline points="158,87 ${elbowX},${elbowY} ${handX},${handY}" fill="none" stroke="#0f172a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="${elbowX}" cy="${elbowY}" r="3" fill="#059669"/>
+          <!-- Dumbbell -->
+          <rect x="${handX - 13}" y="${handY - 4}" width="26" height="8" rx="2" fill="#059669"/>
+          <rect x="${handX - 16}" y="${handY - 8}" width="6" height="16" rx="2" fill="#0f172a"/>
+          <rect x="${handX + 10}" y="${handY - 8}" width="6" height="16" rx="2" fill="#0f172a"/>
+        `;
+      }
+
+      if (exId === 'dumbbell_rdl') {
+        // p=0: standing upright; p=1: hips pushed back ~70° torso hinge, dumbbells near shins
+        const hipX = 134 - p * 22;
+        const hipY = 104 + p * 6;
+        const angleRad = (p * 72 * Math.PI) / 180;
+        const torsoLen = 56;
+        const shoulderX = hipX + Math.sin(angleRad) * torsoLen;
+        const shoulderY = hipY - Math.cos(angleRad) * torsoLen;
+        const headX = hipX + Math.sin(angleRad) * (torsoLen + 15);
+        const headY = hipY - Math.cos(angleRad) * (torsoLen + 15);
+        // Arm hangs vertically from shoulder, staying close to legs
+        const handX = shoulderX - p * 12;
+        const handY = shoulderY + 46;
+
+        return `
+          ${floor}
+          <!-- Hip Shift Cue -->
+          <line x1="112" y1="104" x2="86" y2="104" stroke="#059669" stroke-width="1.5" stroke-dasharray="3 3"/>
+          <text x="48" y="100" fill="#047857" font-size="9.5" font-family="monospace" font-weight="800">HIPS BACK</text>
+
+          <!-- Legs with Soft Knee Bend -->
+          <polyline points="136,166 140,136 ${hipX},${hipY}" fill="none" stroke="#0f172a" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+
+          <!-- Highlighted Hamstrings & Glutes -->
+          <line x1="${hipX - 2}" y1="${hipY + 4}" x2="136" y2="135" stroke="#10b981" stroke-width="6" stroke-linecap="round" class="muscle-highlight"/>
+          <circle cx="${hipX - 3}" cy="${hipY}" r="7" fill="#10b981" class="muscle-highlight"/>
+
+          <!-- Hinged Torso & Head -->
+          <line x1="${hipX}" y1="${hipY}" x2="${shoulderX}" y2="${shoulderY}" stroke="#0f172a" stroke-width="7.5" stroke-linecap="round"/>
+          <circle cx="${headX}" cy="${headY}" r="10.5" fill="#0f172a"/>
+
+          <!-- Vertical Hanging Arm + Dumbbell Grazing Shins -->
+          <line x1="${shoulderX}" y1="${shoulderY + 4}" x2="${handX}" y2="${handY}" stroke="#0f172a" stroke-width="5" stroke-linecap="round"/>
+          <rect x="${handX - 13}" y="${handY - 4}" width="26" height="8" rx="2" fill="#059669"/>
+          <rect x="${handX - 16}" y="${handY - 8}" width="6" height="16" rx="2" fill="#0f172a"/>
+          <rect x="${handX + 10}" y="${handY - 8}" width="6" height="16" rx="2" fill="#0f172a"/>
+        `;
+      }
+
+      if (exId === 'bicep_curl') {
+        // p=0: arm hanging down; p=1: forearm curled up ~125 deg to shoulder
+        const elbowX = 134;
+        const elbowY = 92;
+        const forearmLen = 34;
+        // Angle from straight down (PI/2) rotating up (-128 deg)
+        const angle = (Math.PI / 2) - p * ((128 * Math.PI) / 180);
+        const handX = elbowX + Math.cos(angle) * forearmLen;
+        const handY = elbowY + Math.sin(angle) * forearmLen;
+
+        return `
+          ${floor}
+          <!-- Standing Lifter -->
+          <line x1="134" y1="166" x2="134" y2="106" stroke="#334155" stroke-width="7" stroke-linecap="round"/>
+          <line x1="134" y1="106" x2="134" y2="54" stroke="#0f172a" stroke-width="7.5" stroke-linecap="round"/>
+          <circle cx="134" cy="39" r="10.5" fill="#0f172a"/>
+
+          <!-- Pinned Upper Arm + Glowing Bicep -->
+          <line x1="134" y1="60" x2="${elbowX}" y2="${elbowY}" stroke="#0f172a" stroke-width="5.5" stroke-linecap="round"/>
+          <ellipse cx="139" cy="76" rx="5.5" ry="12" fill="#10b981" class="muscle-highlight"/>
+          <text x="72" y="82" fill="#047857" font-size="9.5" font-family="monospace" font-weight="800">ELBOW PINNED</text>
+
+          <!-- Articulated Curling Forearm & Dumbbell -->
+          <line x1="${elbowX}" y1="${elbowY}" x2="${handX}" y2="${handY}" stroke="#0f172a" stroke-width="5" stroke-linecap="round"/>
+          <circle cx="${elbowX}" cy="${elbowY}" r="3" fill="#059669"/>
+          <!-- Dumbbell -->
+          <rect x="${handX - 12}" y="${handY - 4}" width="24" height="8" rx="2" fill="#059669"/>
+          <rect x="${handX - 15}" y="${handY - 8}" width="5.5" height="16" rx="2" fill="#0f172a"/>
+          <rect x="${handX + 9.5}" y="${handY - 8}" width="5.5" height="16" rx="2" fill="#0f172a"/>
+        `;
+      }
+
+      return '';
+    }
+
+    // =========================================================
+    // 5. INTEGRATED MODAL REST TIMER + WEB AUDIO CHIME
+    // =========================================================
+    let modalTimerPreset = 90;
+    let modalTimerRemaining = 90;
+    let modalTimerRunning = false;
+    let modalTimerInterval = null;
+
+    function formatSeconds(sec) {
+      const m = Math.floor(sec / 60);
+      const s = sec % 60;
+      return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    function updateModalTimerUI() {
+      const disp = document.getElementById('modal-timer-display');
+      const status = document.getElementById('modal-timer-status');
+      const btn = document.getElementById('modal-timer-start-btn');
+
+      disp.textContent = formatSeconds(modalTimerRemaining);
+
+      if (modalTimerRunning) {
+        status.textContent = 'Resting...';
+        status.className = 'text-[11px] font-bold text-emerald-400';
+        btn.textContent = 'Pause';
+        btn.className = 'px-3.5 py-2 rounded-lg bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs transition';
+      } else {
+        status.textContent = modalTimerRemaining === 0 ? 'Rest Done!' : 'Ready';
+        status.className = modalTimerRemaining === 0 ? 'text-[11px] font-bold text-emerald-400' : 'text-[11px] text-slate-400';
+        btn.textContent = 'Start';
+        btn.className = 'px-3.5 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs transition';
+      }
+    }
+
+    function stopModalTimerInterval() {
+      if (modalTimerInterval) {
+        clearInterval(modalTimerInterval);
+        modalTimerInterval = null;
+      }
+      modalTimerRunning = false;
+    }
+
+    function startModalTimer(seconds = null) {
+      if (seconds !== null) {
+        modalTimerPreset = seconds;
+        modalTimerRemaining = seconds;
+      } else if (modalTimerRemaining <= 0) {
+        modalTimerRemaining = modalTimerPreset;
+      }
+
+      stopModalTimerInterval();
+      modalTimerRunning = true;
+      updateModalTimerUI();
+
+      modalTimerInterval = setInterval(() => {
+        if (modalTimerRemaining > 0) {
+          modalTimerRemaining--;
+          updateModalTimerUI();
+        }
+        if (modalTimerRemaining <= 0) {
+          stopModalTimerInterval();
+          updateModalTimerUI();
+          playCompletionChime();
+        }
+      }, 1000);
+    }
+
+    function toggleModalTimer() {
+      if (modalTimerRunning) {
+        stopModalTimerInterval();
+        updateModalTimerUI();
+      } else {
+        startModalTimer();
+      }
+    }
+
+    function addModalTimer15() {
+      modalTimerRemaining += 15;
+      updateModalTimerUI();
+    }
+
+    function resetModalTimer(presetOverride = null) {
+      stopModalTimerInterval();
+      if (presetOverride !== null) modalTimerPreset = presetOverride;
+      modalTimerRemaining = modalTimerPreset;
+      updateModalTimerUI();
+    }
+
+    function playCompletionChime() {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        [587.33, 880].forEach((freq, i) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.16);
+          gain.gain.setValueAtTime(0.001, ctx.currentTime + i * 0.16);
+          gain.gain.exponentialRampToValueAtTime(0.2, ctx.currentTime + i * 0.16 + 0.03);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.16 + 0.5);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(ctx.currentTime + i * 0.16);
+          osc.stop(ctx.currentTime + i * 0.16 + 0.55);
+        });
+      } catch (e) {
+        // Ignore if audio context is restricted
+      }
+    }
+
+    // Boot Wall Chart on Load
+    window.addEventListener('DOMContentLoaded', () => {
+      renderWallChart();
+    });
+  </script>
+</body>
+</html>
